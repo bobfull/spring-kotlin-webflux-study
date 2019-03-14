@@ -17,7 +17,7 @@ class CustomerServiceImpl : CustomerService {
     val customers = ConcurrentHashMap<Int, Customer>(initialCustomers.associateBy(Customer::id))
 
 
-    override fun getCustomer(id: Int) = customers[id]?.toMono()
+    override fun getCustomer(id: Int) = customers[id]?.toMono() ?: Mono.empty()
 
     override fun searchCustomer(nameFilter: String) = customers.filter { it.value.name.contains(nameFilter, true) }
             .map(Map.Entry<Int, Customer>::value).toFlux()
