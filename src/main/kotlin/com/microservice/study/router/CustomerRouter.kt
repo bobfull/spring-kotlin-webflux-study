@@ -17,6 +17,11 @@ class CustomerRouter {
             "/customer".nest{
                 GET("/{id}",  customerHandler::get)
             }
+
+            "customers".nest {
+                GET("/", customerHandler::serarch)
+            }
         }
     }
+
 }
