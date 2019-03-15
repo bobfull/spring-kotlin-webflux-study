@@ -1,6 +1,7 @@
 package com.microservice.study.service
 
 import com.microservice.study.data.Customer
+import com.microservice.study.exception.CustomerExistException
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
 import reactor.core.publisher.toFlux
@@ -22,8 +23,24 @@ class CustomerServiceImpl : CustomerService {
     override fun searchCustomer(nameFilter: String) = customers.filter { it.value.name.contains(nameFilter, true) }
             .map(Map.Entry<Int, Customer>::value).toFlux()
 
-    override fun createCustomer(customerMono: Mono<Customer>) = customerMono.map {
-        customers[it.id] = it
-        it
+    override fun createCustomer(customerMono: Mono<Customer>) = customerMono.flatMap {
+        if(customers[it.id] == null) {
+            customers[it.id] = it
+            it.toMono()
+        } else{
+            Mono.error(CustomerExistException("Customer ${it.id} already Exist"))
+        }
     }
+
+    override fun deleteCustomer(id: Int): Mono<Customer> {
+        if(customers[id] == null)
+            return Mono.error(CustomerExistException("Customer $id not Exist"))
+
+        else{
+            val result = customers[id]?.toMono() ?: Mono.empty()
+            customers.remove(id)
+            return result
+        }
+    }
+
 }
