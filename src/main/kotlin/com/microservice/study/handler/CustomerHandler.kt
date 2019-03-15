@@ -33,7 +33,7 @@ class CustomerHandler(val customerService: CustomerService) {
     fun delete(serverRequest: ServerRequest) =
             customerService.deleteCustomer(serverRequest.pathVariable("id").toInt()).flatMap { ok().body(fromObject(it)) }
                     .onErrorResume(Exception::class) {
-                        badRequest().body(fromObject(ErrorResponse("error creating consumer",it.message ?: "error")))
+                        badRequest().body(fromObject(ErrorResponse("error deleting consumer",it.message ?: "error")))
                     }
 
 
