@@ -15,12 +15,12 @@ class CustomerRouter {
     fun customerRoutes() = router {
         "/customer".nest {
             GET("/{id}", customerHandler::get)
-//                POST("/", customerHandler::create)
-            //               DELETE("/{id}", customerHandler::delete)
+            POST("/", customerHandler::create)
+            DELETE("/{id}", customerHandler::delete)
         }
 
         "/customers".nest {
-            //               GET("/", customerHandler::search)
+            GET("/", customerHandler::search)
         }
     }
 

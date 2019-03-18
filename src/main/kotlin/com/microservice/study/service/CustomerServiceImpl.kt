@@ -16,34 +16,14 @@ class CustomerServiceImpl : CustomerService {
     @Autowired
     lateinit var customerRepository: CustomerRepository
 
-   /* companion object {
-        val initialCustomers = arrayOf(Customer(1, "Kotlin"),
-                Customer(2, "Spring"),
-                Customer(3, "Microservice", Customer.Telephone("12345","12345")))
-    }
-    val customers = ConcurrentHashMap<Int, Customer>(initialCustomers.associateBy(Customer::id))
-*/
 
     override fun getCustomer(id: Int) = customerRepository.findById(id)
 
-   /* override fun searchCustomer(nameFilter: String) = customers.filter { it.value.name.contains(nameFilter, true) }
-            .map(Map.Entry<Int, Customer>::value).toFlux()
+    override fun searchCustomer(nameFilter: String) = customerRepository.findCustomer(nameFilter)
 
-    override fun createCustomer(customerMono: Mono<Customer>) = customerMono.flatMap {
-        if(customers[it.id] == null) {
-            customers[it.id] = it
-            it.toMono()
-        } else{
-            Mono.error(CustomerExistException("Customer ${it.id} already Exist"))
-        }
-    }
+    override fun createCustomer(customerMono: Mono<Customer>) = customerRepository.create(customerMono)
 
-    override fun deleteCustomer(id: Int): Mono<Customer> = when(customers[id]){
-            null -> Mono.error(CustomerNoExistException("Customer $id not Exist"))
-            else -> {
-                val result = customers[id]?.toMono() ?: Mono.empty()
-                customers.remove(id)
-                result
-            }
-        }*/
-    }
+
+    override fun deleteCustomer(id: Int) = customerRepository.deleteById(id).map { it.deletedCount > 0}
+
+}
